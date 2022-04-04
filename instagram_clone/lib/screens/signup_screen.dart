@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/text_field_input.dart';
 import 'package:instagram_clone/resourses/auth_Methods.dart';
 
@@ -14,9 +18,10 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
+  Uint8List? _image;
+
   @override
   @override
   void dispose() {
@@ -51,16 +56,21 @@ class _SignupScreenState extends State<SignupScreen> {
             const SizedBox(height: 64),
             Stack(
               children: [
-                const CircleAvatar(
-                  radius: 64,
-                  backgroundImage: NetworkImage(
-                      'https://media.istockphoto.com/photos/portrait-of-young-smiling-caucasian-man-with-crossed-arms-wearing-picture-id1171169107?k=20&m=1171169107&s=612x612&w=0&h=VkbOnU3zWYCbh3ojzqWFhK7JObxQduGzr4bRxqbgkLU='),
-                ),
+                _image != null
+                    ? CircleAvatar(
+                        radius: 64, backgroundImage: MemoryImage(_image!))
+                    : const CircleAvatar(
+                        radius: 64,
+                        backgroundImage: NetworkImage(
+                            'https://m.media-amazon.com/images/I/51e6kpkyuIL._AC_SL1200_.jpg'),
+                      ),
+                //agregar foto
                 Positioned(
                     bottom: -10,
                     left: 80,
                     child: IconButton(
-                        onPressed: () {}, icon: const Icon(Icons.add_a_photo)))
+                        onPressed: selectedImage,
+                        icon: const Icon(Icons.add_a_photo)))
               ],
             ),
             const SizedBox(height: 24),
@@ -91,8 +101,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     email: _emailController.text,
                     password: _passwordController.text,
                     userName: _userNameController.text,
-                    bio: _bioController.text);
-                print(res);
+                    bio: _bioController.text,
+                    file: _image!);
+
+                if (res != 'ok') {
+                  showSnackBar(context, res);
+                }
               },
               child: Container(
                 child: const Text('Crear'),
@@ -133,5 +147,10 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     )));
+  }
+
+  void selectedImage() async {
+    Uint8List image = await pickImage(ImageSource.gallery);
+    setState(() => _image = image);
   }
 }
