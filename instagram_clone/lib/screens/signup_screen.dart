@@ -21,6 +21,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   @override
@@ -96,20 +97,18 @@ class _SignupScreenState extends State<SignupScreen> {
                 textInputType: TextInputType.text),
             const SizedBox(height: 12),
             InkWell(
-              onTap: () async {
-                String res = await AuthMethods().signUpUser(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    userName: _userNameController.text,
-                    bio: _bioController.text,
-                    file: _image!);
-
-                if (res != 'ok') {
-                  showSnackBar(context, res);
-                }
-              },
+              onTap: signUpUser,
               child: Container(
-                child: const Text('Crear'),
+                child: _isLoading
+                    ? const Center(
+                        child: SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator(
+                          color: primaryColor,
+                        ),
+                      ))
+                    : const Text('Registrar'),
                 width: double.infinity,
                 alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -152,5 +151,23 @@ class _SignupScreenState extends State<SignupScreen> {
   void selectedImage() async {
     Uint8List image = await pickImage(ImageSource.gallery);
     setState(() => _image = image);
+  }
+
+  void signUpUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().signUpUser(
+        email: _emailController.text,
+        password: _passwordController.text,
+        userName: _userNameController.text,
+        bio: _bioController.text,
+        file: _image!);
+    setState(() {
+      _isLoading = false;
+    });
+    if (res != 'ok') {
+      showSnackBar(context, res);
+    }
   }
 }
