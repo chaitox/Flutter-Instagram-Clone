@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/text_field_input.dart';
@@ -36,8 +37,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SafeArea(
-            child: SingleChildScrollView(
+        body: SingleChildScrollView(
       child: Container(
         height: MediaQuery.of(context).size.height,
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -127,14 +127,14 @@ class _SignupScreenState extends State<SignupScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  child: const Text('No cuentas con un usuario?'),
+                  child: const Text('Tienes una cuenta? '),
                   padding: const EdgeInsets.symmetric(vertical: 8),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: navigateToSignIn,
                   child: Container(
                     child: const Text(
-                      'Registrarse',
+                      'Inicia aqui',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -145,12 +145,18 @@ class _SignupScreenState extends State<SignupScreen> {
           ],
         ),
       ),
-    )));
+    ));
   }
 
   void selectedImage() async {
     Uint8List image = await pickImage(ImageSource.gallery);
     setState(() => _image = image);
+  }
+
+  void navigateToSignIn() {
+    print('object');
+    Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()));
   }
 
   void signUpUser() async {
